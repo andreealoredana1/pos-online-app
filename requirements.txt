@@ -1,0 +1,46 @@
+import streamlit as st
+import pandas as pd
+
+st.set_page_config(page_title="Procesare POS", layout="wide")
+
+st.title("Aplicatie Online Procesare Tranzactii POS")
+
+uploaded_file = st.file_uploader("Incarca fisier CSV", type=["csv"])
+
+if uploaded_file is not None:
+    try:
+        df = pd.read_csv(uploaded_file)
+
+        df["TRANS_AMOUNT"] = pd.to_numeric(df["TRANS_AMOUNT"], errors="coerce")
+        df["FEE_AMOUNT"] = pd.to_numeric(df["FEE_AMOUNT"], errors="coerce")
+
+        rezultat = df.groupby("DEVICE_NAME").agg({
+            "TRANS_AMOUNT": "sum",
+            "FEE_AMOUNT": "sum"
+        }).reset_index()
+
+        total_tranzactii = df["TRANS_AMOUNT"].sum()
+        total_fee = df["FEE_AMOUNT"].sum()
+
+        st.subheader("Rezumat per DEVICE_NAME")
+        st.dataframe(rezultat, use_container_width=True)
+
+        col1, col2 = st.columns(2)
+        col1.metric("Total Tranzactii", f"{total_tranzactii:,.2f}")
+        col2.metric("Total Fee", f"{total_fee:,.2f}")
+
+        csv_export = rezultat.to_csv(index=False).encode("utf-8")
+
+        st.download_button(
+            "Descarca Raport CSV",
+            csv_export,
+            "raport_pos.csv",
+            "text/csv"
+        )
+
+    except Exception as e:
+        st.error(f"Eroare la procesare: {e}")
+
+streamlit
+pandas
+openpyxl
