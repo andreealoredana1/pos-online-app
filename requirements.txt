@@ -41,6 +41,3 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Eroare la procesare: {e}")
 
-streamlit
-pandas
-openpyxl
