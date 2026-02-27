@@ -38,6 +38,4 @@ if uploaded_file is not None:
             "text/csv"
         )
 
-    except Exception as e:
-        st.error(f"Eroare la procesare: {e}")
-
+   
